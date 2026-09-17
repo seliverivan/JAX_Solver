@@ -79,7 +79,7 @@ def test_burgers_shock():
             (1.0, 0.0),
         ),
         cfl=cfl,
-        save_every=1,
+        num_frames=2,
     )
 
     u = sol["solution"]

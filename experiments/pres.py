@@ -69,7 +69,7 @@ def test_burgers_dirichlet():
             (left_bc, right_bc),
         ),
         cfl=cfl,
-        save_every=1,
+        num_frames=2,
     )
 
     u = sol["solution"]
@@ -165,7 +165,7 @@ def test_burgers_outflow():
             (0.0, 0.0),
         ),
         cfl=cfl,
-        save_every=1,
+        num_frames=2,
     )
 
     u = sol["solution"]

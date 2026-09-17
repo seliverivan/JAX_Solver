@@ -147,8 +147,9 @@ def solve_vector_weno9(
     # ------------------------------------------------------
     # Integration
     #
-    # num_frames controls ONLY the amount of stored
-    # history. It does not affect the numerical integration.
+    # num_frames controls the amount of stored history.
+    # The integrator aligns timesteps with output times so
+    # every frame corresponds exactly to its reported time.
     # ------------------------------------------------------
 
     (
