@@ -183,7 +183,7 @@ def run(ndim, n):
             rhs=rhs,
             compute_dt=compute_dt,
             max_steps=10000,
-            save_every=100,
+            num_frames=2,
         )
     )
 

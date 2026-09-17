@@ -97,7 +97,7 @@ def test_dirichlet():
 
     expected_right = (
         2.0 * right_value
-        - u[-ng:]
+        - jnp.flip(u[-ng:])
     )
 
     assert_close(
@@ -268,7 +268,7 @@ def test_outflow_dirichlet():
 
     expected_right = (
         2.0 * right_value
-        - u[-ng:]
+        - jnp.flip(u[-ng:])
     )
 
     assert_close(
@@ -335,7 +335,7 @@ def test_neumann():
 
     expected_left = (
         u[0]
-        - k * dx * left_derivative
+        - jnp.flip(k) * dx * left_derivative
     )
 
     # right:
@@ -531,3 +531,6 @@ if __name__ == "__main__":
         f"RESULT: {passed}/{len(tests)} tests passed"
     )
     print("=" * 70)
+
+    if passed != len(tests):
+        raise SystemExit(1)

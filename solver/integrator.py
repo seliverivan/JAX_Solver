@@ -123,9 +123,7 @@ def integrate(
     #
     #     num_frames * u0.size
     #
-    # and NOT:
-    #
-    #     max_steps / save_every * u0.size
+    # and NOT proportional to the number of timesteps.
     # ------------------------------------------------------
 
     history = jnp.zeros(
@@ -205,6 +203,34 @@ def integrate(
         )
 
         # --------------------------------------------------
+        # Output-time alignment
+        #
+        # A CFL step may be larger than the interval between
+        # requested frames. Limit it to the next frame time so
+        # every saved state actually corresponds to the time
+        # reported in `times`.
+        # --------------------------------------------------
+
+        has_frames_left = (
+            save_id < num_frames
+        )
+
+        next_frame_id = jnp.minimum(
+            save_id,
+            num_frames - 1,
+        )
+
+        dt_to_next_frame = (
+            frame_times[next_frame_id] - t
+        )
+
+        dt = jnp.where(
+            has_frames_left,
+            jnp.minimum(dt, dt_to_next_frame),
+            dt,
+        )
+
+        # --------------------------------------------------
         # RK5
         # --------------------------------------------------
 
@@ -229,27 +255,21 @@ def integrate(
         # store the current solution.
         # --------------------------------------------------
 
-        has_frames_left = (
-            save_id < num_frames
-        )
-
         crossed_frame = jnp.logical_and(
             has_frames_left,
-            t_new >= frame_times[save_id],
+            t_new >= frame_times[next_frame_id],
         )
 
         # --------------------------------------------------
         # Write current solution into the requested frame.
         #
-        # In normal CFL operation one RK step will not
-        # cross many output times.
-        #
-        # Therefore this writes at most one frame per step.
+        # The timestep is aligned with the next requested
+        # output time above, so at most one frame is crossed.
         # --------------------------------------------------
 
         history = lax.cond(
             crossed_frame,
-            lambda h: h.at[save_id].set(u_new),
+            lambda h: h.at[next_frame_id].set(u_new),
             lambda h: h,
             history,
         )

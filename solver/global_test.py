@@ -180,7 +180,7 @@ def test_euler_consistency(ndim):
         boundary_types=boundary_types,
         boundary_values=boundary_values,
         cfl=0.4,
-        save_every=1,
+        num_frames=2,
         max_steps=10,
     )
 
@@ -251,7 +251,7 @@ def test_full_solver(ndim):
         boundary_types=boundary_types,
         boundary_values=boundary_values,
         cfl=0.2,
-        save_every=1,
+        num_frames=2,
         max_steps=10000,
     )
 
