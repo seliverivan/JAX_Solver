@@ -2,7 +2,7 @@ import jax.numpy as jnp
 
 
 # ==========================================================
-# FV polynomial on 9-cell stencil
+# Конечно-объёмный полином на шаблоне из 9 ячеек
 # ==========================================================
 
 def _cell_average_moments(
@@ -40,7 +40,7 @@ def _cell_average_moments(
 
 
 # ==========================================================
-# Coefficients for point evaluation
+# Коэффициенты для вычисления значения в точке
 # ==========================================================
 
 def point_reconstruction_coefficients(
@@ -93,7 +93,7 @@ def point_reconstruction_coefficients(
 
     evaluation = xi ** powers
 
-    # A.T @ c = evaluation
+    # A.T @ c = значение в точке
     coeff = jnp.linalg.solve(
         A.T,
         evaluation,
@@ -103,7 +103,7 @@ def point_reconstruction_coefficients(
 
 
 # ==========================================================
-# Point reconstruction
+# Реконструкция в точке
 # ==========================================================
 
 def reconstruct_point(
@@ -143,7 +143,7 @@ def reconstruct_point(
 
 
 # ==========================================================
-# Multiple quadrature points
+# Набор квадратурных точек
 # ==========================================================
 
 def reconstruct_points(

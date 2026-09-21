@@ -25,65 +25,65 @@ def integrate(
     num_frames=2,
 ):
     """
-    Generic adaptive time integrator.
+    Универсальный интегратор с адаптивным шагом по времени.
 
     Parameters
     ----------
     u0 : jax.Array
-        Initial condition.
+        Начальное условие.
 
     t_end : float
-        Final simulation time.
+        Конечное время расчёта.
 
     rhs : callable
-        Right-hand side function.
+        Функция правой части уравнения.
 
     compute_dt : callable
-        Adaptive timestep function.
+        Функция вычисления адаптивного шага.
 
     max_steps : int
-        Maximum number of timesteps.
+        Максимальное число шагов.
 
     num_frames : int
-        Number of states stored in history.
+        Число состояний, сохраняемых в истории.
 
-        The first frame is always t = 0.
-        The last frame is always t = t_end.
+        Первый кадр всегда соответствует t = 0.
+        Последний кадр всегда соответствует t = t_end.
 
-        Memory usage therefore depends only on
-        num_frames, not on max_steps.
+        Поэтому объём памяти зависит только от num_frames,
+        а не от max_steps.
 
     Returns
     -------
     u : jax.Array
-        Final solution.
+        Конечное решение.
 
     history : jax.Array
-        Saved solution states.
+        Сохранённые состояния решения.
 
         Shape:
             (num_frames,) + u0.shape
 
     times : jax.Array
-        Requested/saved frame times.
+        Заданные времена сохранённых кадров.
 
         Shape:
             (num_frames,)
 
     save_id : jax.Array
-        Number of frames written.
+        Число записанных кадров.
 
     step : jax.Array
-        Number of RK steps performed.
+        Число выполненных шагов Рунге--Кутты.
     """
 
     # ------------------------------------------------------
-    # Validate number of frames
+    # Проверка числа кадров
     #
-    # We need at least:
+    # Необходимы как минимум:
     #
-    #   frame 0 -> initial state
-    #   frame 1 -> final state
+    #   кадр 0 -> начальное состояние
+    #   кадр 1 -> конечное состояние
     # ------------------------------------------------------
 
     num_frames = max(
@@ -92,13 +92,13 @@ def integrate(
     )
 
     # ------------------------------------------------------
-    # Target frame times
+    # Заданные времена кадров
     #
-    # Example:
+    # Пример:
     #
     # num_frames = 5
     #
-    # times:
+    # времена:
     #
     # 0
     # 0.25 t_end
@@ -115,15 +115,15 @@ def integrate(
     )
 
     # ------------------------------------------------------
-    # History
+    # История решения
     #
-    # IMPORTANT:
+    # ВАЖНО:
     #
-    # Memory is now:
+    # Требуемый объём памяти:
     #
     #     num_frames * u0.size
     #
-    # and NOT proportional to the number of timesteps.
+    # и не зависит от числа шагов по времени.
     # ------------------------------------------------------
 
     history = jnp.zeros(
@@ -134,17 +134,17 @@ def integrate(
     history = history.at[0].set(u0)
 
     # ------------------------------------------------------
-    # Saved frame counter
+    # Счётчик сохранённых кадров
     #
-    # Frame 0 already contains u0.
+    # Кадр 0 уже содержит u0.
     #
-    # Therefore the next frame to write is 1.
+    # Поэтому следующим записывается кадр 1.
     # ------------------------------------------------------
 
     save_id = jnp.int32(1)
 
     # ------------------------------------------------------
-    # Integration state
+    # Состояние интегратора
     # ------------------------------------------------------
 
     state = (
@@ -159,7 +159,7 @@ def integrate(
     )
 
     # ------------------------------------------------------
-    # Loop condition
+    # Условие продолжения цикла
     # ------------------------------------------------------
 
     def cond(state):
@@ -178,7 +178,7 @@ def integrate(
         )
 
     # ------------------------------------------------------
-    # Loop body
+    # Тело цикла
     # ------------------------------------------------------
 
     def body(state):
@@ -192,7 +192,7 @@ def integrate(
         ) = state
 
         # --------------------------------------------------
-        # Adaptive timestep
+        # Адаптивный шаг по времени
         # --------------------------------------------------
 
         dt = compute_dt(u)
@@ -203,12 +203,11 @@ def integrate(
         )
 
         # --------------------------------------------------
-        # Output-time alignment
+        # Согласование с временами вывода
         #
-        # A CFL step may be larger than the interval between
-        # requested frames. Limit it to the next frame time so
-        # every saved state actually corresponds to the time
-        # reported in `times`.
+        # Шаг CFL может быть больше интервала между заданными кадрами.
+        # Ограничиваем его временем следующего кадра, чтобы каждое
+        # сохранённое состояние соответствовало значению в `times`.
         # --------------------------------------------------
 
         has_frames_left = (
@@ -245,14 +244,14 @@ def integrate(
         step_new = step + 1
 
         # --------------------------------------------------
-        # Save frames
+        # Сохранение кадров
         #
-        # The next requested frame time is:
+        # Время следующего заданного кадра:
         #
         #     frame_times[save_id]
         #
-        # If the current RK step crossed that time,
-        # store the current solution.
+        # Если текущий шаг Рунге--Кутты достиг этого времени,
+        # сохраняем полученное решение.
         # --------------------------------------------------
 
         crossed_frame = jnp.logical_and(
@@ -261,10 +260,10 @@ def integrate(
         )
 
         # --------------------------------------------------
-        # Write current solution into the requested frame.
+        # Запись текущего решения в заданный кадр.
         #
-        # The timestep is aligned with the next requested
-        # output time above, so at most one frame is crossed.
+        # Шаг согласован со следующим временем вывода, поэтому
+        # за один шаг достигается не более одного кадра.
         # --------------------------------------------------
 
         history = lax.cond(
@@ -280,13 +279,13 @@ def integrate(
         )
 
         # --------------------------------------------------
-        # Final state
+        # Конечное состояние
         #
-        # If we reached t_end, explicitly put the final
-        # numerical solution into the last history slot.
+        # При достижении t_end явно записываем конечное численное
+        # решение в последний элемент истории.
         #
-        # This guarantees that history[-1] is the actual
-        # final solution.
+        # Это гарантирует, что history[-1] содержит фактическое
+        # конечное решение.
         # --------------------------------------------------
 
         reached_final = (
@@ -303,12 +302,11 @@ def integrate(
         )
 
         # --------------------------------------------------
-        # If final state was written and the frame counter
-        # has not reached the end, mark all frame slots
-        # logically as available.
+        # Если конечное состояние записано, а счётчик кадров ещё
+        # не дошёл до конца, логически помечаем все кадры доступными.
         #
-        # The solver still slices using save_id, so update
-        # it to num_frames at the final step.
+        # Решатель обрезает историю по save_id, поэтому на последнем
+        # шаге устанавливаем его равным num_frames.
         # --------------------------------------------------
 
         save_id = lax.cond(
@@ -327,7 +325,7 @@ def integrate(
         )
 
     # ------------------------------------------------------
-    # Integrate
+    # Интегрирование
     # ------------------------------------------------------
 
     (
@@ -343,14 +341,14 @@ def integrate(
     )
 
     # ------------------------------------------------------
-    # If max_steps was reached before t_end,
-    # save_id may be smaller than num_frames.
+    # Если max_steps достигнуто раньше t_end, значение save_id
+    # может быть меньше num_frames.
     #
-    # The caller can use history[:save_id].
+    # Вызывающий код может использовать history[:save_id].
     # ------------------------------------------------------
 
     # ------------------------------------------------------
-    # Times corresponding to the allocated frames
+    # Времена, соответствующие выделенным кадрам
     # ------------------------------------------------------
 
     times = frame_times

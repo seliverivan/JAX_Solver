@@ -3,7 +3,10 @@ import jax.numpy as jnp
 
 DIFFUSION_SPECTRAL_RADIUS = 6.501587301587302
 
-SSPRK54_REAL_STABILITY = 5.3314
+# Граница устойчивости используемой схемы Dormand--Prince 5-го порядка
+# на отрицательной вещественной полуоси. Она определяется условием
+# |R(-r)| = 1 для функции устойчивости метода.
+DORMAND_PRINCE_5_REAL_STABILITY = 3.306567892634947
 
 
 def convective_dt(
@@ -47,7 +50,7 @@ def diffusive_dt(
 
     dt = (
         cfl
-        * SSPRK54_REAL_STABILITY
+        * DORMAND_PRINCE_5_REAL_STABILITY
         / denominator
     )
 
