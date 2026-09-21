@@ -63,7 +63,7 @@ def reconstruct_face_quadrature(
     """
 
     # ------------------------------------------------------
-    # 1. WENO reconstruction in the normal direction
+    # 1. Реконструкция WENO в направлении нормали
     # ------------------------------------------------------
 
     U_L, U_R = weno9_fv(
@@ -73,15 +73,15 @@ def reconstruct_face_quadrature(
     )
 
     # ------------------------------------------------------
-    # At this point:
+    # На этом этапе:
     #
     # 2D:
     #
     #     U_L.shape = (ncomp, Nface, Ntrans)
     #
-    # where Ntrans is the transverse cell index.
+    # где Ntrans — индекс ячейки в поперечном направлении.
     #
-    # We now reconstruct along the transverse direction.
+    # Далее выполняем реконструкцию в поперечном направлении.
     # ------------------------------------------------------
 
     ndim = U.ndim - 1
@@ -92,9 +92,9 @@ def reconstruct_face_quadrature(
         )
 
     # ------------------------------------------------------
-    # Determine transverse axis.
+    # Определяем поперечную ось.
     #
-    # Spatial axes:
+    # Пространственные оси:
     #
     #     axis=1 -> x
     #     axis=2 -> y
@@ -112,18 +112,17 @@ def reconstruct_face_quadrature(
         )
 
     # ------------------------------------------------------
-    # WENO reconstruction along transverse direction
+    # Реконструкция WENO в поперечном направлении
     # ------------------------------------------------------
 
-    # We need values at arbitrary points inside each
-    # transverse cell.
+    # Требуются значения в произвольных точках внутри каждой
+    # поперечной ячейки.
     #
-    # For now use the existing WENO reconstruction
-    # to obtain interface values. The actual arbitrary
-    # Gauss-point reconstruction will be added next.
+    # Пока используем существующую реконструкцию WENO для получения
+    # значений на гранях. Реконструкция в произвольных точках Гаусса
+    # будет добавлена позднее.
     #
-    # This function is intentionally kept as the
-    # architectural entry point.
+    # Эта функция сохранена как архитектурная точка входа.
 
     raise NotImplementedError(
         "Quadrature-point reconstruction is the next step."

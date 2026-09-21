@@ -2,7 +2,7 @@ import jax.numpy as jnp
 
 
 # ==========================================================
-# Scalar Burgers
+# Скалярное уравнение Бюргерса
 # ==========================================================
 
 def burgers_flux(u):
@@ -26,7 +26,7 @@ def burgers_rusanov_flux(uL, uR):
 
 
 # ==========================================================
-# Vector Burgers
+# Векторное уравнение Бюргерса
 # ==========================================================
 
 def vector_burgers_rusanov_flux(
@@ -35,9 +35,9 @@ def vector_burgers_rusanov_flux(
     component,
 ):
     """
-    Rusanov numerical flux for vector Burgers.
+    Численный поток Русанова для векторного уравнения Бюргерса.
 
-    State convention:
+    Соглашение о представлении состояния:
 
         2D:
             U.shape = (2, ...)
@@ -45,7 +45,7 @@ def vector_burgers_rusanov_flux(
         3D:
             U.shape = (3, ...)
 
-    The first axis stores vector components:
+    Первая ось содержит компоненты вектора:
 
         U[0] = u
         U[1] = v
@@ -54,14 +54,14 @@ def vector_burgers_rusanov_flux(
     Parameters
     ----------
     uL, uR :
-        Left and right reconstructed vector states.
+        Реконструированные векторные состояния слева и справа.
 
         Shape:
 
             (n_components, ...)
 
     component :
-        Direction/component of the flux:
+        Направление и компонента потока:
 
             0 -> F_x = u * U
             1 -> F_y = v * U
@@ -70,13 +70,13 @@ def vector_burgers_rusanov_flux(
     Returns
     -------
     F :
-        Vector numerical flux.
+        Векторный численный поток.
 
-        Same shape as uL and uR.
+        Имеет ту же форму, что uL и uR.
     """
 
     # ------------------------------------------------------
-    # Velocity in the direction of the flux
+    # Скорость в направлении потока
     #
     # component = 0:
     #     velocity = u
@@ -92,14 +92,14 @@ def vector_burgers_rusanov_flux(
     velocity_R = uR[component]
 
     # ------------------------------------------------------
-    # Physical flux
+    # Физический поток
     #
     # F = U_component * U
     #
-    # velocity has shape (...)
-    # U has shape (components, ...)
+    # velocity имеет форму (...)
+    # U имеет форму (components, ...)
     #
-    # Restore component axis for broadcasting.
+    # Восстанавливаем ось компонент для broadcasting.
     # ------------------------------------------------------
 
     velocity_L = jnp.expand_dims(
@@ -121,7 +121,7 @@ def vector_burgers_rusanov_flux(
     )
 
     # ------------------------------------------------------
-    # Maximum characteristic speed
+    # Максимальная характеристическая скорость
     # ------------------------------------------------------
 
     alpha = jnp.maximum(
@@ -130,7 +130,7 @@ def vector_burgers_rusanov_flux(
     )
 
     # ------------------------------------------------------
-    # Rusanov flux
+    # Поток Русанова
     # ------------------------------------------------------
 
     return (

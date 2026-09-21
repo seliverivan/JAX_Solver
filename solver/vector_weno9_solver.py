@@ -15,16 +15,16 @@ def vector_burgers_dt(
     cfl=0.4,
 ):
     """
-    CFL timestep for vector Burgers.
+    Шаг CFL для векторного уравнения Бюргерса.
 
-    U shape:
+    Форма массива U:
 
         1D: (1, Nx)
         2D: (2, Nx, Ny)
         3D: (3, Nx, Ny, Nz)
 
-    The characteristic speed is estimated from
-    the maximum absolute velocity over all components.
+    Характеристическая скорость оценивается по максимальному
+    модулю скорости среди всех компонент.
     """
 
     speed = jnp.maximum(
@@ -53,13 +53,13 @@ def solve_vector_weno9(
     rhs_fn=vector_burgers_rhs,
 ):
     """
-    Solve multidimensional vector Burgers equation
-    using WENO9-FV with RK5 time integration.
+    Решает многомерное векторное уравнение Бюргерса методом
+    WENO9-FV с интегрированием RK5 по времени.
 
     Parameters
     ----------
     U0 : jax.Array
-        Initial cell averages.
+        Начальные средние значения по ячейкам.
 
         1D:
             (1, Nx)
@@ -71,58 +71,57 @@ def solve_vector_weno9(
             (3, Nx, Ny, Nz)
 
     t_end : float
-        Final simulation time.
+        Конечное время расчёта.
 
     dx : tuple
-        Grid spacing in each spatial direction.
+        Шаг сетки в каждом пространственном направлении.
 
     mu : float
-        Diffusion coefficient.
+        Коэффициент диффузии.
 
     boundary_types : tuple
-        Boundary condition types for each spatial direction.
+        Типы граничных условий для каждого направления.
 
     boundary_values : tuple
-        Boundary values for each spatial direction.
+        Граничные значения для каждого направления.
 
     cfl : float
-        CFL coefficient.
+        Коэффициент CFL.
 
     num_frames : int
-        Number of solution states stored in history.
+        Число состояний решения, сохраняемых в истории.
 
-        The first frame corresponds to t = 0.
-        The final frame corresponds to t = t_end.
+        Первый кадр соответствует t = 0, последний — t = t_end.
 
-        Memory consumption depends on num_frames,
-        not on the number of RK timesteps.
+        Потребление памяти зависит от num_frames, а не от числа
+        шагов Рунге--Кутты.
 
     max_steps : int
-        Maximum number of timesteps.
+        Максимальное число шагов по времени.
 
     rhs_fn : callable
-        RHS function. Defaults to vector_burgers_rhs.
+        Функция правой части. По умолчанию vector_burgers_rhs.
 
     Returns
     -------
     dict
-        Dictionary containing:
+        Словарь со следующими полями:
 
         solution :
-            Final solution.
+            Конечное решение.
 
         history :
-            Saved solution states.
+            Сохранённые состояния решения.
 
         times :
-            Corresponding output times.
+            Соответствующие времена вывода.
 
         steps :
-            Number of RK timesteps performed.
+            Число выполненных шагов Рунге--Кутты.
     """
 
     # ------------------------------------------------------
-    # RHS
+    # Правая часть
     # ------------------------------------------------------
 
     rhs = partial(
@@ -134,7 +133,7 @@ def solve_vector_weno9(
     )
 
     # ------------------------------------------------------
-    # Adaptive timestep
+    # Адаптивный шаг по времени
     # ------------------------------------------------------
 
     dt_fn = partial(
@@ -145,11 +144,11 @@ def solve_vector_weno9(
     )
 
     # ------------------------------------------------------
-    # Integration
+    # Интегрирование
     #
-    # num_frames controls the amount of stored history.
-    # The integrator aligns timesteps with output times so
-    # every frame corresponds exactly to its reported time.
+    # num_frames задаёт объём сохраняемой истории. Интегратор
+    # согласует шаги с временами вывода, поэтому каждый кадр
+    # точно соответствует указанному времени.
     # ------------------------------------------------------
 
     (
@@ -168,7 +167,7 @@ def solve_vector_weno9(
     )
 
     # ------------------------------------------------------
-    # Convert scalar JAX counters to Python integers
+    # Преобразование скалярных счётчиков JAX в целые числа Python
     # ------------------------------------------------------
 
     save_id = int(save_id)
@@ -176,7 +175,7 @@ def solve_vector_weno9(
     steps = int(steps)
 
     # ------------------------------------------------------
-    # Result
+    # Результат
     # ------------------------------------------------------
 
     return {

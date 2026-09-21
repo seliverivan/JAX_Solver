@@ -4,7 +4,7 @@ from weno9.weno_fv import weno9_fv
 
 
 # ==========================================================
-# Scalar flux divergence
+# Дивергенция скалярного потока
 # ==========================================================
 
 def flux_divergence(
@@ -15,7 +15,7 @@ def flux_divergence(
     ng=5,
 ):
     """
-    Finite-volume numerical flux divergence for scalar field.
+    Конечно-объёмная дивергенция численного потока скалярного поля.
     """
 
     uL, uR = weno9_fv(
@@ -51,7 +51,7 @@ def flux_divergence(
 
 
 # ==========================================================
-# Vector flux divergence
+# Дивергенция векторного потока
 # ==========================================================
 
 def vector_flux_divergence(
@@ -62,9 +62,9 @@ def vector_flux_divergence(
     ng=5,
 ):
     """
-    Finite-volume divergence of one vector Burgers flux.
+    Конечно-объёмная дивергенция одного потока векторного уравнения Бюргерса.
 
-    State convention:
+    Соглашение о представлении состояния:
 
         2D:
             u.shape = (2, Nx, Ny)
@@ -73,14 +73,14 @@ def vector_flux_divergence(
             u.shape = (3, Nx, Ny, Nz)
 
     axis:
-        spatial direction
+        пространственное направление
 
             0 -> x
             1 -> y
             2 -> z
 
     component:
-        velocity component defining the flux
+        компонента скорости, определяющая поток
 
             0 -> F_x = u * U
             1 -> F_y = v * U
@@ -89,17 +89,16 @@ def vector_flux_divergence(
     Returns
     -------
     divergence:
-        Vector field with the same shape as the physical
-        part of u.
+        Векторное поле той же формы, что физическая часть u.
     """
 
     # ------------------------------------------------------
-    # WENO reconstruction
+    # Реконструкция WENO
     #
-    # IMPORTANT:
+    # ВАЖНО:
     #
-    # weno9_fv operates along `axis`.
-    # Component axis is preserved.
+    # weno9_fv работает вдоль `axis`.
+    # Ось компонент сохраняется.
     # ------------------------------------------------------
 
     uL, uR = weno9_fv(
@@ -109,7 +108,7 @@ def vector_flux_divergence(
     )
 
     # ------------------------------------------------------
-    # Vector Rusanov flux
+    # Векторный поток Русанова
     # ------------------------------------------------------
 
     from operators.flux import (
@@ -123,15 +122,15 @@ def vector_flux_divergence(
     )
 
     # ------------------------------------------------------
-    # Flux difference
+    # Разность потоков
     #
-    # F has N+1 interfaces along `axis`.
+    # F содержит N+1 граней вдоль `axis`.
     #
-    # Therefore:
+    # Поэтому:
     #
     # div[i] = (F[i+1] - F[i]) / dx
     #
-    # Component axis is untouched.
+    # Ось компонент не изменяется.
     # ------------------------------------------------------
 
     right_flux = jnp.take(

@@ -4,12 +4,12 @@ from operators.second_derivative import second_derivative
 
 
 # ============================================================
-# 2D VECTOR LAPLACIAN
+# ДВУМЕРНЫЙ ВЕКТОРНЫЙ ЛАПЛАСИАН
 #
 # u_ext[..., 0] = u
 # u_ext[..., 1] = v
 #
-# u_ext already contains ghost cells.
+# u_ext уже содержит фиктивные ячейки.
 #
 # Δu = u_xx + u_yy
 # Δv = v_xx + v_yy
@@ -31,10 +31,10 @@ def vector_laplacian_2d(
         # ----------------------------------------------------
         # d²/dx²
         #
-        # second_derivative removes ghost cells only along
-        # the differentiation axis.
+        # second_derivative удаляет фиктивные ячейки только вдоль
+        # оси дифференцирования.
         #
-        # Therefore ghost cells along y remain.
+        # Поэтому фиктивные ячейки вдоль y сохраняются.
         # ----------------------------------------------------
 
         dxx = second_derivative(
@@ -45,7 +45,7 @@ def vector_laplacian_2d(
         )
 
         # dxx: (nx, ny + 2*ng)
-        # remove y ghost cells
+        # удаляем фиктивные ячейки вдоль y
         dxx = dxx[
             :,
             ng:-ng,
@@ -63,14 +63,14 @@ def vector_laplacian_2d(
         )
 
         # dyy: (nx + 2*ng, ny)
-        # remove x ghost cells
+        # удаляем фиктивные ячейки вдоль x
         dyy = dyy[
             ng:-ng,
             :,
         ]
 
         # ----------------------------------------------------
-        # Now both are (nx, ny)
+        # Теперь оба массива имеют форму (nx, ny)
         # ----------------------------------------------------
 
         result.append(
@@ -84,13 +84,13 @@ def vector_laplacian_2d(
 
 
 # ============================================================
-# 3D VECTOR LAPLACIAN
+# ТРЁХМЕРНЫЙ ВЕКТОРНЫЙ ЛАПЛАСИАН
 #
 # u_ext[..., 0] = u
 # u_ext[..., 1] = v
 # u_ext[..., 2] = w
 #
-# u_ext already contains ghost cells.
+# u_ext уже содержит фиктивные ячейки.
 #
 # Δu = u_xx + u_yy + u_zz
 # ============================================================
@@ -123,7 +123,7 @@ def vector_laplacian_3d(
         # dxx:
         # (nx, ny + 2*ng, nz + 2*ng)
         #
-        # remove y and z ghost cells
+        # удаляем фиктивные ячейки вдоль y и z
 
         dxx = dxx[
             :,
@@ -145,7 +145,7 @@ def vector_laplacian_3d(
         # dyy:
         # (nx + 2*ng, ny, nz + 2*ng)
         #
-        # remove x and z ghost cells
+        # удаляем фиктивные ячейки вдоль x и z
 
         dyy = dyy[
             ng:-ng,
@@ -167,7 +167,7 @@ def vector_laplacian_3d(
         # dzz:
         # (nx + 2*ng, ny + 2*ng, nz)
         #
-        # remove x and y ghost cells
+        # удаляем фиктивные ячейки вдоль x и y
 
         dzz = dzz[
             ng:-ng,
@@ -176,7 +176,7 @@ def vector_laplacian_3d(
         ]
 
         # ----------------------------------------------------
-        # Now all three are:
+        # Теперь все три массива имеют форму:
         #
         # (nx, ny, nz)
         # ----------------------------------------------------
